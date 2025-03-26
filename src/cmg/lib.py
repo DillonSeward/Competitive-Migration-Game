@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict
 import numpy as np
+import json
 from enum import Enum
 
 
@@ -25,10 +26,11 @@ class Agent:
         beta = 1
         vals = {}
         for id, territory in territory_map.items():
-            eval = (alpha * np.dot(self.preferences, territory.features)) - (
-                beta * territory.count
-            )
+            projected_count = territory.count + 1
+            dot_prod = np.dot(self.preferences, territory.features)
+            eval = (alpha * dot_prod) - (beta * projected_count)
             vals[id] = eval
+        print(f"EVALS for agent {self.id}:\n{vals}\n")
         return vals
 
     def check_migration(
@@ -78,21 +80,23 @@ class GlobalState:
         )
 
     def run(self):
-        self.incoming.sort(key=lambda agent: agent.id)
         while len(self.incoming) > 0:
             territory_change: Optional[int] = None
+            last_agent: Optional[int] = None
             agent = self.incoming.pop(0)
             territory_change = agent.check_migration(None, self.territories)
             if territory_change is not None:
                 print(f"adding agent: {agent.id} to territory: {territory_change}\n")
+                last_agent = agent.id
                 self.add_agent_to_territory(agent, territory_change)
 
             if territory_change is not None:
                 id = territory_change
                 territory_change = None
                 for i, agent in enumerate(self.territory_agents.get(id)):
-                    territory_change = agent.check_migration(id, self.territories)
-                    if territory_change is not None:
-                        self.remove_agent_from_territory(i, id)
-                        self.add_agent_to_territory(agent, territory_change)
-                        break
+                    if agent.id != last_agent:
+                        territory_change = agent.check_migration(id, self.territories)
+                        if territory_change is not None:
+                            self.remove_agent_from_territory(i, id)
+                            self.add_agent_to_territory(agent, territory_change)
+                            break
