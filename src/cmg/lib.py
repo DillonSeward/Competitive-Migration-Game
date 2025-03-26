@@ -68,14 +68,13 @@ class GlobalState:
         )
 
     def main_loop(self):
-        print("MAIN")
-
+        self.incoming.sort(key=lambda agent: agent.id)
         while len(self.incoming) > 0:
             territory_change: Optional[int] = None
             agent = self.incoming.pop(0)
-            print("adding agent: ", agent.id)
             territory_change = agent.evaluate(self.territories)
             if territory_change is not None:
+                print(f"adding agent: {agent.id} to territory: {territory_change}\n")
                 self.add_agent_to_territory(agent, territory_change)
 
             if territory_change is not None:
@@ -88,5 +87,3 @@ class GlobalState:
                         t_agents.pop(i)
                         self.add_agent_to_territory(agent, territory_change)
                         break
-
-        print(self)
