@@ -12,28 +12,11 @@ class TestCase:
         self.agents = agents
         self.territories = territories
 
-    # Outputting evals that are 1 too high
-    def validate_evals(
-        agent: Agent, current: int, territory_map: Dict[int, Territory]
-    ) -> Dict[int, float]:
-        alpha = 1
-        beta = 1
-        vals = {}
-        for id, territory in territory_map.items():
-            projected_count = territory.count + 1
-            if id == current:
-                projected_count -= 1
-            dot_prod = np.dot(agent.preferences, territory.features)
-            eval = (alpha * dot_prod) - (beta * projected_count)
-            vals[id] = eval
-        print(f"EVALS for agent {agent.id}:\n{vals}")
-        return vals
-
     def validate(state: GlobalState):
         print("VALIDATING")
         for tId, agents in state.territory_agents.items():
             for agent in agents:
-                evals = TestCase.validate_evals(agent, tId, state.territories)
+                evals = agent.evals(tId, state.territories)
                 max_eval = max(evals.values(), default=float("-inf"))
                 max_keys = [k for k, v in evals.items() if v == max_eval]
                 if tId in max_keys:
@@ -41,19 +24,38 @@ class TestCase:
                 else:
                     print(f"❌ Agent {agent.id} IS NOT in NE (better territory(s): {max_keys}\n")
     
-    def run_test(self):
-        print("Running Test Case")
+    def run(self):
+        print("-------Running--------")
         state = GlobalState()
         state.add_agents(self.agents)
         state.add_territories(self.territories)
-        state.run()
-
+        state.start()
         TestCase.validate(state)
 
         print(f"Main Loop Ended:\n{state}")
 
 
 def main():
+    list_agents = []
+    list_territories = []
+
+    num_agents = int(input("Please Enter Number of Agents (Vehicles): "))
+    print("NUMBER OF AGENT PREFERNCES AND TERRITORY FEATURES MUST BE THE SAME")
+    for agent_i in range(1, num_agents + 1):
+            preference_vector_str = input(f"Enter Agent {agent_i}'s "
+            "Preference Vector(Comma-Sperated w/ Space (', ')): ")
+            preference_vector = [int(x.strip()) for x in preference_vector_str.split(',')]
+            list_agents.append(Agent(agent_i, preference_vector))
+    
+    num_territories = int(input("Please Enter Number of Territories (Platoons): "))
+    print("NUMBER OF AGENT PREFERNCES AND TERRITORY FEATURES MUST BE THE SAME")
+    for territory_i in range(1, num_territories + 1):
+            feature_vector_str = input(f"Enter Agent {territory_i}'s "
+            "Feature Vector(Comma-Sperated w/ Space (', ')): ")
+            feature_vector = [int(x.strip()) for x in feature_vector_str.split(',')]
+            list_territories.append(Territory(territory_i, feature_vector))
+    user_case =  TestCase(list_agents, list_territories)
+
     case1 = TestCase(
         [
             Agent(1, [4, 3, 5, 2, 1]),
@@ -88,8 +90,9 @@ def main():
             Territory(3, [0, 1, 0, 0, 0]),
         ],
     )
-    case1.run_test()
-    case2.run_test()
+    user_case.run()
+    case1.run()
+    case2.run()
 
 
 if __name__ == "__main__":
