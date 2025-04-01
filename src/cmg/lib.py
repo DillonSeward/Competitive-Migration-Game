@@ -21,22 +21,25 @@ class Agent:
         self.id = id
         self.preferences = np.array(preferences)
 
-    def evals(self, territory_map: Dict[int, Territory]) -> Dict[int, float]:
+    def evals(self, current: int, territory_map: Dict[int, Territory]) -> Dict[int, float]:
         alpha = 1
         beta = 1
         vals = {}
         for id, territory in territory_map.items():
             projected_count = territory.count + 1
+            if id == current:
+                projected_count -= 1
             dot_prod = np.dot(self.preferences, territory.features)
             eval = (alpha * dot_prod) - (beta * projected_count)
             vals[id] = eval
-        print(f"EVALS for agent {self.id}:\n{vals}\n")
+        #print(f"EVALS for agent {self.id}:\n{vals}\n")
         return vals
 
     def check_migration(
         self, current: Optional[int], territory_map: Dict[int, Territory]
     ) -> Optional[int]:
-        evals = self.evals(territory_map)
+        tId =  current
+        evals = self.evals(tId, territory_map)
         best_id = max(evals, key=evals.get)
         return best_id
 
@@ -64,8 +67,8 @@ class GlobalState:
         t_agents.append(agent)
 
     def remove_agent_from_territory(self, agent_idx: int, tId: int):
-        self.territory_agents.get(tId).pop(agent_idx)
         self.territories.get(tId).count -= 1
+        self.territory_agents.get(tId).pop(agent_idx)
 
     def __str__(self):
         territory_info = "\n".join(
@@ -96,7 +99,8 @@ class GlobalState:
                 for i, agent in enumerate(self.territory_agents.get(id)):
                     if agent.id != last_agent:
                         territory_change = agent.check_migration(id, self.territories)
-                        if territory_change is not None:
+                        if territory_change is not id:
                             self.remove_agent_from_territory(i, id)
                             self.add_agent_to_territory(agent, territory_change)
+                            print(f"SWITCHING agent: {agent.id} to territory: {territory_change}\n")
                             break

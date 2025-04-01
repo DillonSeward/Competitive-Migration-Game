@@ -26,7 +26,7 @@ class TestCase:
             dot_prod = np.dot(agent.preferences, territory.features)
             eval = (alpha * dot_prod) - (beta * projected_count)
             vals[id] = eval
-        print(f"EVALS for agent {agent.id}:\n{vals}\n")
+        print(f"EVALS for agent {agent.id}:\n{vals}")
         return vals
 
     def validate(state: GlobalState):
@@ -34,11 +34,13 @@ class TestCase:
         for tId, agents in state.territory_agents.items():
             for agent in agents:
                 evals = TestCase.validate_evals(agent, tId, state.territories)
-                # print(f"agent {agent.id} evals: ", evals)
                 max_eval = max(evals.values(), default=float("-inf"))
                 max_keys = [k for k, v in evals.items() if v == max_eval]
-                print(f"agent {agent.id} should be in any of: {max_keys}\n")
-
+                if tId in max_keys:
+                    print(f"✅ Agent {agent.id} is in NE (no better territory found)\n")
+                else:
+                    print(f"❌ Agent {agent.id} IS NOT in NE (better territory(s): {max_keys}\n")
+    
     def run_test(self):
         print("Running Test Case")
         state = GlobalState()
