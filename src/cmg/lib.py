@@ -82,7 +82,7 @@ class GlobalState:
             f"Incoming Agents: {[agent.id for agent in self.incoming]}\n"
         )
 
-    def run(self):
+    def start(self):
         while len(self.incoming) > 0:
             territory_change: Optional[int] = None
             last_agent: Optional[int] = None
