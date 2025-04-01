@@ -36,64 +36,38 @@ class TestCase:
 
 
 def main():
-    list_agents = []
-    list_territories = []
+    print("INPUT SOURCE\n"
+          "RANDOMLY GENERATED AGENTS AND TERRITORIES [1]: \n"
+          "INPUT FILE DATA(.csv): [2] \n"
+          "USER IN-LINE INPUT: [3] ")
+    user_input_type = int(input(""))
+    match user_input_type:
+        case 1:
+            print("Case 1 not deifned yet")
+        case 2:
+            print("Case 2 not deifned yet")
+        case 3:
+            list_agents = []
+            list_territories= []
 
-    num_agents = int(input("Please Enter Number of Agents (Vehicles): "))
-    print("NUMBER OF AGENT PREFERNCES AND TERRITORY FEATURES MUST BE THE SAME")
-    for agent_i in range(1, num_agents + 1):
-            preference_vector_str = input(f"Enter Agent {agent_i}'s "
-            "Preference Vector(Comma-Sperated w/ Space (', ')): ")
-            preference_vector = [int(x.strip()) for x in preference_vector_str.split(',')]
-            list_agents.append(Agent(agent_i, preference_vector))
-    
-    num_territories = int(input("Please Enter Number of Territories (Platoons): "))
-    print("NUMBER OF AGENT PREFERNCES AND TERRITORY FEATURES MUST BE THE SAME")
-    for territory_i in range(1, num_territories + 1):
-            feature_vector_str = input(f"Enter Agent {territory_i}'s "
-            "Feature Vector(Comma-Sperated w/ Space (', ')): ")
-            feature_vector = [int(x.strip()) for x in feature_vector_str.split(',')]
-            list_territories.append(Territory(territory_i, feature_vector))
-    user_case =  TestCase(list_agents, list_territories)
+            num_agents = int(input("Please Enter Number of Agents (Vehicles): "))
+            print("NUMBER OF AGENT PREFERNCES AND TERRITORY FEATURES MUST BE THE SAME")
+            for agent_i in range(1, num_agents + 1):
+                    preference_vector_str = input(f"Enter Agent {agent_i}'s "
+                    "Preference Vector(Comma-Sperated w/ Space (', ')): ")
+                    preference_vector = [int(x.strip()) for x in preference_vector_str.split(',')]
+                    list_agents.append(Agent(agent_i, preference_vector))
+            
+            num_territories = int(input("Please Enter Number of Territories (Platoons): "))
+            print("NUMBER OF AGENT PREFERNCES AND TERRITORY FEATURES MUST BE THE SAME")
+            for territory_i in range(1, num_territories + 1):
+                    feature_vector_str = input(f"Enter Agent {territory_i}'s "
+                    "Feature Vector(Comma-Sperated w/ Space (', ')): ")
+                    feature_vector = [int(x.strip()) for x in feature_vector_str.split(',')]
+                    list_territories.append(Territory(territory_i, feature_vector))
+            
+            user_case =  TestCase(list_agents, list_territories)
 
-    case1 = TestCase(
-        [
-            Agent(1, [4, 3, 5, 2, 1]),
-            Agent(2, [5, 2, 3, 4, 1]),
-            Agent(3, [1, 5, 4, 3, 1]),
-            Agent(4, [5, 2, 3, 4, 1]),
-            Agent(5, [1, 2, 3, 4, 5]),
-        ],
-        [
-            Territory(1, [0, 0, 1, 0, 0]),
-            Territory(2, [1, 0, 0, 0, 0]),
-            Territory(3, [0, 1, 0, 0, 0]),
-        ],
-    )
-    case2 = TestCase(
-        [
-            Agent(1, [4, 3, 5, 2, 1]),
-            Agent(2, [5, 2, 3, 4, 1]),
-            Agent(3, [1, 5, 4, 3, 1]),
-            Agent(4, [5, 2, 3, 4, 1]),
-            Agent(5, [1, 2, 3, 4, 5]),
-            # Same as 2
-            Agent(6, [5, 2, 3, 4, 1]),
-            Agent(7, [5, 2, 3, 4, 1]),
-            Agent(8, [5, 2, 3, 4, 1]),
-            Agent(9, [5, 2, 3, 4, 1]),
-            Agent(10, [5, 2, 3, 4, 1]),
-        ],
-        [
-            Territory(1, [0, 0, 1, 0, 0]),
-            Territory(2, [1, 0, 0, 0, 0]),
-            Territory(3, [0, 1, 0, 0, 0]),
-        ],
-    )
-    user_case.run()
-    case1.run()
-    case2.run()
-
-
+            user_case.run()
 if __name__ == "__main__":
     main()
