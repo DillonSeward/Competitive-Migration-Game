@@ -41,11 +41,33 @@ def main():
           "INPUT FILE DATA(.csv): [2] \n"
           "USER IN-LINE INPUT: [3] ")
     user_input_type = int(input(""))
+    
     match user_input_type:
         case 1:
-            print("Case 1 not deifned yet")
+            list_agents = []
+            list_territories = []
+
+            num_agents = int(input("Please Enter Number of Agents (Vehicles): ")) 
+            num_territories = int(input("Please Enter Number of Territories (Platoons): "))
+            num_feat_pref = int(input("Please Enter Number of Features/Prefences(Must be the same): "))
+            
+            for agent_i in range(1, num_agents + 1):
+                rand_pref_vector = np.random.uniform(0, 1, num_feat_pref).tolist()
+                # THIS IS [0, 1) (can be 0 but not 1) #
+                print(f"Vector for Agent {agent_i} = {rand_pref_vector}\n")
+                list_agents.append(Agent(agent_i, rand_pref_vector))
+            for territory_i in range(1, num_territories + 1):
+                rand_feat_vector = np.random.uniform(0, 1, num_feat_pref).tolist()
+                # THIS IS [0, 1) (can be 0 but not 1) #
+                print(f"Vector for Territory {territory_i} = {rand_feat_vector}\n")
+                list_territories.append(Territory(territory_i, rand_feat_vector))
+                
+            rand_case =  TestCase(list_agents, list_territories)
+            rand_case.run()
+
         case 2:
             print("Case 2 not deifned yet")
+
         case 3:
             list_agents = []
             list_territories= []
@@ -67,7 +89,7 @@ def main():
                     list_territories.append(Territory(territory_i, feature_vector))
             
             user_case =  TestCase(list_agents, list_territories)
-
             user_case.run()
+
 if __name__ == "__main__":
     main()
