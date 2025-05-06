@@ -12,18 +12,20 @@ class Territory:
 
     def __str__(self):
         return (
-            f"ID: {self.id}, Count: {self.count}, Agents: {[a.id for a in self.agents]}"
+            f"ID: {self.id}, Count: {self.count}, Agents: {
+                [a.id for a in self.agents]}"
         )
 
 
 class Agent:
-    def __init__(self, id: int, preferences: List[float]):
+    def __init__(self, id: int, preferences: List[float], alpha: float = 1, beta: float = 1):
         self.id = id
         self.preferences = np.array(preferences)
-
+        self.alpha = alpha 
+        self.beta = beta         
     def evals(self, current: int, territory_map: Dict[int, Territory]) -> Dict[int, float]:
-        alpha = 1
-        beta = 1
+        alpha = self.alpha  
+        beta = self.beta
         vals = {}
         for id, territory in territory_map.items():
             projected_count = territory.count + 1
@@ -32,13 +34,13 @@ class Agent:
             dot_prod = np.dot(self.preferences, territory.features)
             eval = (alpha * dot_prod) - (beta * projected_count)
             vals[id] = eval
-        #print(f"EVALS for agent {self.id}:\n{vals}\n")
+        # print(f"EVALS for agent {self.id}:\n{vals}\n")
         return vals
 
     def check_migration(
         self, current: Optional[int], territory_map: Dict[int, Territory]
     ) -> Optional[int]:
-        tId =  current
+        tId = current
         evals = self.evals(tId, territory_map)
         best_id = max(evals, key=evals.get)
         return best_id
@@ -51,6 +53,7 @@ class GlobalState:
         self.territories: Dict[int, Territory] = {}
         self.incoming: List[Agent] = []
         self.events = []
+        self.switches = 0
 
     def add_agents(self, agents: List[Agent]):
         for agent in agents:
@@ -89,7 +92,8 @@ class GlobalState:
             agent = self.incoming.pop(0)
             territory_change = agent.check_migration(None, self.territories)
             if territory_change is not None:
-                print(f"adding agent: {agent.id} to territory: {territory_change}\n")
+                print(f"adding agent: {agent.id} to territory: {
+                      territory_change}\n")
                 last_agent = agent.id
                 self.add_agent_to_territory(agent, territory_change)
 
@@ -98,9 +102,13 @@ class GlobalState:
                 territory_change = None
                 for i, agent in enumerate(self.territory_agents.get(id)):
                     if agent.id != last_agent:
-                        territory_change = agent.check_migration(id, self.territories)
+                        territory_change = agent.check_migration(
+                            id, self.territories)
                         if territory_change is not id:
                             self.remove_agent_from_territory(i, id)
-                            self.add_agent_to_territory(agent, territory_change)
-                            print(f"SWITCHING agent: {agent.id} to territory: {territory_change}\n")
+                            self.add_agent_to_territory(
+                                agent, territory_change)
+                            print(f"SWITCHING agent: {agent.id} to territory: {
+                                  territory_change}\n")
+                            self.switches += 1
                             break
